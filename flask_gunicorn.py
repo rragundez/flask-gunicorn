@@ -74,10 +74,11 @@ class GunicornStandalone(gunicorn.app.base.BaseApplication):
 @click.option('--debugger/--no-debugger', default=None,
               help='Enable or disable the debugger.  By default the debugger '
                    'is active if debug is enabled.')
-@click.option('--workers', '-w', default=number_of_workers(), help='Number of Gunicorn workers')
-@click.option('--worker_class', '-wc', default=None, help="Specify a custom class of worker to use")
+@click.option('--workers', '-w', default=number_of_workers(), help='Number of Gunicorn workers.')
+@click.option('--worker_class', '-wc', default=None, help="Specify a custom class of worker to use.")
+@click.option('--threads', default=1, help='The number if worker threads for handling requests. [1]')
 @flask.cli.pass_script_info
-def cli(info, host, port, reload, debugger, workers, worker_class):
+def cli(info, host, port, reload, debugger, workers, threads, worker_class):
 
     os.environ['FLASK_RUN_FROM_CLI_SERVER'] = '1'
     debug = flask.cli.get_debug_flag()
@@ -86,7 +87,8 @@ def cli(info, host, port, reload, debugger, workers, worker_class):
     host = host or server_bind_address()
 
     options = {
-        'workers': workers or number_of_workers(),
+        'workers': workers,
+        'threads': threads,
         'bind': '{}:{}'.format(host, port)
     }
 
